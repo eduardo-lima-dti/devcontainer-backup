@@ -84,7 +84,7 @@ docker run --rm -v "<volume>:/w" -v "<destination>:/b" alpine tar xzf /b/<archiv
 
 Schedules `Backup-DockerVolume.ps1` to run automatically every `-IntervalHours` via Windows Task Scheduler, as the current user (no admin rights needed). A run missed while the PC was off runs once it's back on. Expects `Backup-DockerVolume.ps1` in the same folder.
 
-`-Volume` and `-Path` are required, but you don't have to know them up front: omit either one (or run the script with no arguments at all) and a setup wizard prompts for whatever is missing — listing existing Docker volumes to pick from when Docker is reachable — then shows a summary to confirm before it registers (or unregisters) the task.
+`-Volume` and `-Path` are always required; `-Destination` is required too unless `-Unregister` is set. You don't have to know them up front: omit any of them (or run the script with no arguments at all) and a setup wizard prompts for whatever is missing — listing existing Docker volumes to pick from when Docker is reachable — then shows a summary to confirm before it registers (or unregisters) the task.
 
 ```powershell
 # Register (or update) the task
@@ -108,7 +108,7 @@ Re-running with the same `-TaskName` replaces the existing task — that's also 
 | `-TaskName` | No | derived from `-Volume`/`-Path` | Scheduled task name |
 | `-IntervalHours` | No | `2` | How often to run (1–168) |
 | `-Keep` | No | `36` | Archives to retain, forwarded to the backup script |
-| `-Destination` | No | backup script's default | Forwarded to the backup script |
+| `-Destination` | Yes, unless `-Unregister` | backup script's default | Forwarded to the backup script. Prompted for if omitted (blank answer keeps the backup script's own default) |
 | `-Unregister` | No | — | Remove the task instead of creating it |
 
 ## Typical setup

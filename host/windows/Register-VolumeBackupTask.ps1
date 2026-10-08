@@ -9,10 +9,11 @@
   starts once it is back on. Re-running with the same -TaskName replaces the
   task, so it is also how you change the settings.
 
-  -Volume and -Path are required. Omit either one (or run the script with no
-  arguments at all) and a setup wizard prompts for whatever is missing,
-  listing existing Docker volumes to pick from when Docker is reachable, then
-  shows a summary to confirm before it registers (or unregisters) the task.
+  -Volume and -Path are always required; -Destination is required too unless
+  -Unregister is set. Omit any of them (or run the script with no arguments
+  at all) and a setup wizard prompts for whatever is missing, listing
+  existing Docker volumes to pick from when Docker is reachable, then shows a
+  summary to confirm before it registers (or unregisters) the task.
 
 .EXAMPLE
   .\Register-VolumeBackupTask.ps1 -Volume my-volume -Path .persist
@@ -58,7 +59,7 @@ function Read-IntWithDefault {
   }
 }
 
-$wizard = -not $Volume -or -not $Path
+$wizard = -not $Volume -or -not $Path -or (-not $Unregister -and -not $Destination)
 if ($wizard) {
   Write-Host ""
   Write-Host "=== Docker volume backup - setup wizard ===" -ForegroundColor Cyan
