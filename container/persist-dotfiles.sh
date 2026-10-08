@@ -46,16 +46,18 @@ ENTRIES="${*:-$DEFAULT_ENTRIES}"
 
 say() { printf '[persist-dotfiles] %s\n' "$1"; }
 
+NL='
+'
+
 # True when a process named NAME is running: argv[0] is NAME (a binary), or
 # argv[1] is (a script run by its interpreter, e.g. `node /usr/local/bin/NAME`).
 running() {
   for cmdline in /proc/[0-9]*/cmdline; do
     pid="${cmdline#/proc/}"; pid="${pid%/cmdline}"
     [ "$pid" = "$$" ] && continue
-    a0="" a1=""
-    { IFS= read -r a0; IFS= read -r a1; } <<EOF
-$(tr '\0' '\n' <"$cmdline" 2>/dev/null | head -n2)
-EOF
+    args="$(tr '\0' '\n' <"$cmdline" 2>/dev/null | head -n2)" || continue
+    a0="${args%%"$NL"*}" a1=""
+    case "$args" in *"$NL"*) a1="${args#*"$NL"}" ;; esac
     [ "${a0##*/}" = "$1" ] || [ "${a1##*/}" = "$1" ] && return 0
   done
   return 1
